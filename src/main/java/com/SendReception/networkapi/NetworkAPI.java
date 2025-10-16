@@ -26,6 +26,20 @@ public class NetworkAPI {
             sendData(msg, new HashMap<>());
         }
         
+        // Playerオブジェクトのみ送信
+        public void message(Object player) throws IOException {
+            Map<String, String> vars = new HashMap<>();
+            try {
+                Class<?> playerClass = player.getClass();
+                String playerName = (String) playerClass.getMethod("getName").invoke(player);
+                vars.put("playerName", playerName);
+                vars.put("playerUUID", playerClass.getMethod("getUniqueId").invoke(player).toString());
+                sendData("", vars);
+            } catch (Exception e) {
+                throw new IOException("Failed to extract player data", e);
+            }
+        }
+        
         // メッセージと変数1つを送信
         public void message(String msg, String key, String value) throws IOException {
             Map<String, String> vars = new HashMap<>();
