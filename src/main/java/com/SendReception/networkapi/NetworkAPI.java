@@ -4,6 +4,8 @@ import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
+import java.util.HashMap;
+import java.util.Map;
 
 public class NetworkAPI {
     
@@ -19,7 +21,18 @@ public class NetworkAPI {
             this.password = password;
         }
         
+        // メッセージのみ送信
         public void message(String msg) throws IOException {
+            sendData(msg, new HashMap<>());
+        }
+        
+        // メッセージと変数を送信
+        public void message(String msg, Map<String, String> variables) throws IOException {
+            sendData(msg, variables);
+        }
+        
+        // 内部送信処理
+        private void sendData(String msg, Map<String, String> variables) throws IOException {
             try (Socket socket = new Socket(ip, port);
                  DataOutputStream out = new DataOutputStream(socket.getOutputStream())) {
                 
@@ -29,8 +42,41 @@ public class NetworkAPI {
                 
                 // メッセージを送信
                 out.writeUTF(msg);
+                
+                // 変数の数を送信
+                out.writeInt(variables.size());
+                
+                // 変数を送信
+                for (Map.Entry<String, String> entry : variables.entrySet()) {
+                    out.writeUTF(entry.getKey());
+                    out.writeUTF(entry.getValue());
+                }
+                
                 out.flush();
             }
+        }
+    }
+    
+    // 受信データクラス
+    public static class ReceivedData {
+        private String message;
+        private Map<String, String> variables;
+        
+        public ReceivedData(String message, Map<String, String> variables) {
+            this.message = message;
+            this.variables = variables;
+        }
+        
+        public String getMessage() {
+            return message;
+        }
+        
+        public Map<String, String> getVariables() {
+            return variables;
+        }
+        
+        public String getVariable(String key) {
+            return variables.get(key);
         }
     }
     
@@ -43,8 +89,14 @@ public class NetworkAPI {
         return new Sender(ip, port, password);
     }
     
-    // 受信メソッド（サーバー起動と受信を兼ねる）
+    // 受信メソッド(メッセージのみ)
     public static String reception(int port, String password) throws IOException {
+        ReceivedData data = receptionWithVariables(port, password);
+        return data.getMessage();
+    }
+    
+    // 受信メソッド(メッセージと変数)
+    public static ReceivedData receptionWithVariables(int port, String password) throws IOException {
         serverPassword = password;
         
         if (serverSocket == null || serverSocket.isClosed()) {
@@ -63,7 +115,20 @@ public class NetworkAPI {
             }
             
             // メッセージ受信
-            return in.readUTF();
+            String message = in.readUTF();
+            
+            // 変数の数を受信
+            int varCount = in.readInt();
+            
+            // 変数を受信
+            Map<String, String> variables = new HashMap<>();
+            for (int i = 0; i < varCount; i++) {
+                String key = in.readUTF();
+                String value = in.readUTF();
+                variables.put(key, value);
+            }
+            
+            return new ReceivedData(message, variables);
         }
     }
     
