@@ -26,6 +26,13 @@ public class NetworkAPI {
             sendData(msg, new HashMap<>());
         }
         
+        // メッセージと変数1つを送信
+        public void message(String msg, String key, String value) throws IOException {
+            Map<String, String> vars = new HashMap<>();
+            vars.put(key, value);
+            sendData(msg, vars);
+        }
+        
         // メッセージと変数を送信
         public void message(String msg, Map<String, String> variables) throws IOException {
             sendData(msg, variables);
