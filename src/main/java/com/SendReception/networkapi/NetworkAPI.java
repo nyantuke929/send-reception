@@ -31,6 +31,21 @@ public class NetworkAPI {
             sendData(msg, variables);
         }
         
+        // Minecraftプレイヤー情報を送信(Bukkit/Spigot用)
+        public void messageWithPlayer(String msg, Object player) throws IOException {
+            Map<String, String> vars = new HashMap<>();
+            try {
+                // リフレクションでPlayer情報を取得
+                Class<?> playerClass = player.getClass();
+                vars.put("playerName", (String) playerClass.getMethod("getName").invoke(player));
+                vars.put("playerUUID", playerClass.getMethod("getUniqueId").invoke(player).toString());
+                vars.put("playerWorld", playerClass.getMethod("getWorld").invoke(player).getClass().getMethod("getName").invoke(playerClass.getMethod("getWorld").invoke(player)).toString());
+            } catch (Exception e) {
+                throw new IOException("Failed to extract player data", e);
+            }
+            sendData(msg, vars);
+        }
+        
         // 内部送信処理
         private void sendData(String msg, Map<String, String> variables) throws IOException {
             try (Socket socket = new Socket(ip, port);
