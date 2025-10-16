@@ -1,11 +1,9 @@
 package com.SendReception.networkapi;
 
-// NetworkAPI.java
 import java.io.*;
 import java.net.*;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
-import java.util.Arrays;
 
 public class NetworkAPI {
     
