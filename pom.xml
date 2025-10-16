@@ -4,8 +4,8 @@
          http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <modelVersion>4.0.0</modelVersion>
     
-    <groupId>com.yourname</groupId>
-    <artifactId>network-api</artifactId>
+    <groupId>com.SendReception</groupId>
+    <artifactId>networkapi</artifactId>
     <version>1.0.0</version>
     <packaging>jar</packaging>
     
