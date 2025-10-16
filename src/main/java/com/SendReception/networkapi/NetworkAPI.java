@@ -94,28 +94,4 @@ public class NetworkAPI {
     }
 }
 
-// 使用例
-class Example {
-    public static void main(String[] args) {
-        // 送信側の例
-        new Thread(() -> {
-            try {
-                Thread.sleep(1000); // サーバー起動を待つ
-                NetworkAPI.send("localhost", 8080, "mypassword").message("Hello, World!");
-                System.out.println("メッセージ送信完了");
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }).start();
-        
-        // 受信側の例
-        try {
-            System.out.println("サーバー起動中...");
-            String received = NetworkAPI.reception(8080, "mypassword");
-            System.out.println("受信: " + received);
-            NetworkAPI.closeServer();
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-}
+
